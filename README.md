@@ -76,3 +76,75 @@ docker rm temp-builder
   
   ./webproxy
   ```
+
+
+
+
+
+## 使用 Systemd
+
+为 Cloudreve 创建 Systemd 服务文件：
+
+
+
+```
+sudo nano /etc/systemd/system/webproxy.service
+```
+
+根据需要填写以下内容并保存，其中 `PATH_TO_CLOUDREVE` 为 Cloudreve 主程序所在目录，`ExecStart` 为 Cloudreve 主程序路径。
+
+
+
+```
+[Unit]
+Description=Cloudreve
+Documentation=https://docs.cloudreve.org
+After=network.target
+After=mysqld.service
+Wants=network.target
+
+[Service]
+WorkingDirectory=/PATH_TO_webproxy
+ExecStart=/PATH_TO_webproxy/webproxy
+Restart=on-abnormal
+RestartSec=5s
+KillMode=mixed
+
+# 日志输出
+StandardOutput=/var/log/webproxy.log
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
+```
+
+通过 Systemd 启动 Cloudreve：
+
+
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable webproxy
+sudo systemctl start webproxy
+```
+
+日后管理 Cloudreve：
+
+
+
+```
+# 停止 Cloudreve
+sudo systemctl stop webproxy
+
+# 启动 Cloudreve
+sudo systemctl start webproxy
+
+# 重启 Cloudreve
+sudo systemctl restart webproxy
+
+# 查看 Cloudreve 状态
+sudo systemctl status webproxy
+```
+
+
+
