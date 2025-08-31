@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Proxy Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* 一个软软糯糯的蓝色~ */
+        }
+        /* 给按钮加上可爱的泡泡效果 */
+        .cute-btn {
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .cute-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.2), 0 4px 6px -2px rgba(236, 72, 153, 0.1);
+        }
+        .cute-btn:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen p-4 sm:p-6 lg:p-8">
+
+    <div class="w-full max-w-6xl mx-auto">
+        <!-- 头部标题 -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">💕 可爱网页小窗 💕</h1>
+            <p class="text-gray-500 mt-2">在这里输入你想偷偷访问的网址哦~</p>
+        </div>
+
+        <!-- URL 输入框 -->
+        <div class="bg-white rounded-xl shadow-lg p-4 mb-6 sticky top-4 z-10">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input id="urlInput" type="text" placeholder="例如: google.com 或 https://example.com" class="flex-grow w-full px-4 py-3 text-lg bg-gray-100 border-2 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition">
+                <button id="goButton" class="cute-btn w-full sm:w-auto px-8 py-3 text-lg font-semibold text-white bg-pink-500 rounded-lg hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75">
+                    冲鸭!
+                </button>
+            </div>
+        </div>
+
+        <!-- 显示代理内容的 Iframe -->
+        <div class="w-full h-[75vh] bg-white rounded-xl shadow-lg overflow-hidden">
+            <iframe id="proxyFrame" class="w-full h-full border-0" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" title="Proxied Content"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const goButton = document.getElementById('goButton');
+        const proxyFrame = document.getElementById('proxyFrame');
+
+        function loadUrl() {
+            let targetUrl = urlInput.value.trim();
+            if (!targetUrl) {
+                // 如果小哥哥没输入东西，就啥也不做啦
+                return;
+            }
+
+            // 如果没有 http:// 或 https://，就自动帮忙加上 https://
+            if (!/^(https?:\/\/)/i.test(targetUrl)) {
+                targetUrl = 'https://' + targetUrl;
+            }
+
+            // 在 Cloudflare Pages 上，代理 URL 就是我们网站自己的一个路径！
+            const proxyUrl = `/${targetUrl}`;
+            
+            console.log(`正在加载代理网址: ${proxyUrl}`);
+            proxyFrame.src = proxyUrl;
+        }
+
+        // 点击按钮时加载 URL
+        goButton.addEventListener('click', loadUrl);
+
+        // 在输入框里按回车键也可以加载 URL 哦
+        urlInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                loadUrl();
+            }
+        });
+    </script>
+</body>
+</html>
+
